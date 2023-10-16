@@ -37,7 +37,7 @@
     {#if tempFile !== null}
         <p class="text-lg text-neutral-400 mt-2">Selected file: {tempFile.name} ({formatBytes(tempFile.size)})</p>
         <button on:click={readFile} class="absolute bottom-0 mb-5 fill-violet-700 transition-colors hover:fill-violet-800">
-            <!-- TODO: set inside of the arrow white // idk how XD -->
+            <!-- TODO: set the inside of the arrow to white // idk how XD -->
             <ArrowRightCircle class="w-16 h-16"/>           
         </button>
     {:else}
