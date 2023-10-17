@@ -19,7 +19,6 @@ fn walk_sequences(entries: &mut Vec<Entry>, table: Table<'_>) {
 
         let index = format!("[{index}]");
         let e = match value {
-            // TODO: use an actual index
             Value::String(v) => Entry::String(index, v.to_str().unwrap().to_string()),
             Value::Integer(v) => Entry::Int(index, v),
             Value::Number(v) => Entry::Float(index, v),
@@ -27,7 +26,7 @@ fn walk_sequences(entries: &mut Vec<Entry>, table: Table<'_>) {
             Value::Table(v) => {
                 let mut entries = Vec::new();
                 walk_table(&mut entries, v);
-                Entry::Table("[0]".to_owned(), entries)
+                Entry::Table(index, entries)
             }
             other => panic!("Value of type {} is not yet implemented!", other.type_name())
         };

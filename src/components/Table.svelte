@@ -3,6 +3,7 @@
     import TextInput from "./TextInput.svelte";
     import IntInput from "./IntInput.svelte";
     import { formatName } from "../helpers";
+    import Plus from "../icons/Plus.svelte";
     
     export let entries: any[];
     export let inner = false;
@@ -24,5 +25,10 @@
                 </div>
             {/if}
         {/each}
+        {#if inner}
+            <button class="py-1 bg-neutral-700 flex justify-center rounded transition-colors hover:bg-neutral-700/60">
+                <Plus class="h-9 w-9"/>
+            </button>
+        {/if}
     </div>
 {/if}
