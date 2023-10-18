@@ -10,6 +10,7 @@ pub enum Entry {
     Float(String, f64), // number
     Bool(String, bool),
     Table(String, Vec<Entry>),
+    SequenceTable(String, Vec<Entry>),
 }
 
 fn walk_sequences(entries: &mut Vec<Entry>, table: Table<'_>) {
@@ -25,8 +26,12 @@ fn walk_sequences(entries: &mut Vec<Entry>, table: Table<'_>) {
             Value::Boolean(v) => Entry::Bool(index, v),
             Value::Table(v) => {
                 let mut entries = Vec::new();
-                walk_table(&mut entries, v);
-                Entry::Table(index, entries)
+                if walk_table(&mut entries, v.clone()) {
+                    Entry::Table(index, entries)
+                } else {
+                    walk_sequences(&mut entries, v);
+                    Entry::SequenceTable(index, entries)
+                }
             }
             other => panic!("Value of type {} is not yet implemented!", other.type_name())
         };
@@ -36,7 +41,9 @@ fn walk_sequences(entries: &mut Vec<Entry>, table: Table<'_>) {
 }
 
 // TODO: read config in the same order as the lua file
-pub fn walk_table(entries: &mut Vec<Entry>, table: Table<'_>) {
+pub fn walk_table(entries: &mut Vec<Entry>, table: Table<'_>) -> bool { // returns true if the table is key, value
+    let mut updated = false;
+
     for pair in table.pairs::<Value, Value>() {
         let (key, value) = pair.unwrap();
 
@@ -50,14 +57,20 @@ pub fn walk_table(entries: &mut Vec<Entry>, table: Table<'_>) {
                 Value::Boolean(v) => Entry::Bool(entry_name, v),
                 Value::Table(v) => {
                     let mut entries = Vec::new();
-                    walk_table(&mut entries, v.clone());
-                    walk_sequences(&mut entries, v);
-                    Entry::Table(entry_name, entries)
+                    if walk_table(&mut entries, v.clone()) {
+                        Entry::Table(entry_name, entries)
+                    } else {
+                        walk_sequences(&mut entries, v);
+                        Entry::SequenceTable(entry_name, entries)
+                    }
                 }
                 other => panic!("Value of type {} is not yet implemented!", other.type_name())
             };
 
+            updated = true;
             entries.push(e);
         }
     }
+
+    updated
 }

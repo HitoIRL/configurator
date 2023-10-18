@@ -1,6 +1,6 @@
 [package]
 name = "configurator"
-version = "0.1.0"
+version = "0.1.4"
 description = "FiveM UI Configurator"
 authors = ["HitoIRL"]
 license = ""
